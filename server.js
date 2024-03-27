@@ -40,8 +40,7 @@ app.post("/users", (req, res) => {
 app.post("/sessions", (req, res) => {
   const data = req.body; //data from the client
   sessions.push(data);
-  /* res.send("Post data received:" + JSON.stringify(data)); */
-  res.send("Password" + JSON.stringify(generateOTP()));
+  res.send(JSON.stringify(generateOTP())); //A new password
 });
 
 //Show saldo
