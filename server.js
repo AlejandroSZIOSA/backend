@@ -18,7 +18,7 @@ function generateOTP() {
 }
 
 // Din kod här. Skriv dina arrayer
-const users = [{ id: 101, username: "gato", password: "123456" }];
+const users = [{ id: 101, username: "gato", password: "123" }];
 const accounts = [{ id: 1, userId: 101, amount: 3 }];
 const sessions = []; //{ userId: 101, token: "nwfcx" }
 
@@ -32,20 +32,26 @@ app.get("/saldo", (req, res) => {
 //Create users
 app.post("/users", (req, res) => {
   const data = req.body; //data from the client
+
   users.push(data);
-  res.send("Post data received:" + JSON.stringify(data));
+  console.log(users);
+  res.send("User created" + JSON.stringify(data));
 });
 
 //Login + return one password for login
 app.post("/sessions", (req, res) => {
   const data = req.body; //data from the client
-  sessions.push(data);
 
   const { username, password } = data;
 
-  if (username == users[0].username && password == users[0].password) {
-    return res.send(JSON.stringify(generateOTP())); //Return a token
+  for (let i = 0; i < users.length; i++) {
+    if (username == users[i].username && password == users[i].password) {
+      const token = generateOTP();
+      sessions.push({ token: token });
+      return res.send(JSON.stringify(generateOTP())); //Return a token
+    }
   }
+
   res.send(false);
 });
 
