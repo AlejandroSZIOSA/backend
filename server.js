@@ -47,7 +47,8 @@ app.post("/sessions", (req, res) => {
   for (let i = 0; i < users.length; i++) {
     if (username == users[i].username && password == users[i].password) {
       const token = generateOTP();
-      sessions.push({ token: token });
+      sessions.push({ id: users[i].id, token: token });
+      /* console.log(sessions); */
       return res.send(JSON.stringify(generateOTP())); //Return a token
     }
   }
