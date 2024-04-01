@@ -14,15 +14,16 @@ app.use(bodyParser.json());
 function generateOTP() {
   // Generera en sexsiffrig numerisk OTP
   const otp = Math.floor(100000 + Math.random() * 900000);
-  return otp.toString();
+  /* return otp.toString(); */
+  return "777";
 }
 
 // Din kod här. Skriv dina arrayer
 const users = [{ id: 101, username: "gato", password: "123" }];
 const accounts = [{ id: 1, userId: 101, amount: 3 }];
-const sessions = []; //{ userId: 101, token: "nwfcx" }
+const sessions = [{ userId: 101, token: "777" }];
 
-const saldo = { userId: 1, saldo: "20" };
+/* const saldo = { userId: 1, saldo: "20" }; */
 
 // Din kod här. Skriv dina routes:
 app.get("/saldo", (req, res) => {
@@ -52,20 +53,37 @@ app.post("/sessions", (req, res) => {
       return res.send(generateOTP()); //Return a token
     }
   }
-
   res.send(false);
 });
 
 //Show saldo
 app.post("/me/accounts", (req, res) => {
   const data = req.body; //data from the client
-  accounts.push(data);
-  res.send("Post data received:" + JSON.stringify(data));
+
+  const { token } = data;
+  let userId = "not found";
+
+  for (let i = 0; i < sessions.length; i++) {
+    if (sessions[i].token === token) {
+      userId = sessions[i].userId;
+    }
+  }
+  res.send(JSON.stringify(userId));
 });
 
 //Manage Account
 app.post("/me/accounts/transactions", (req, res) => {
   const data = req.body; //data from the client
+  const { userId } = data;
+
+  /* console.log(userId); */
+  let saldo = "not found";
+  for (let i = 0; i < accounts.length; i++) {
+    if (accounts[i].userId === userId) {
+      saldo = accounts[i].amount;
+    }
+  }
+  res.send(JSON.stringify(saldo)); // Send the current saldo
 });
 
 // Starta servern
