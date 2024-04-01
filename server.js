@@ -49,7 +49,7 @@ app.post("/sessions", (req, res) => {
       const token = generateOTP();
       sessions.push({ id: users[i].id, token: token });
       /* console.log(sessions); */
-      return res.send(JSON.stringify(generateOTP())); //Return a token
+      return res.send(generateOTP()); //Return a token
     }
   }
 
