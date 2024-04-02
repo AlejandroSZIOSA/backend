@@ -63,12 +63,20 @@ app.post("/me/accounts", (req, res) => {
   const { token } = data;
   let userId = "not found";
 
+  let amount = "not found";
+
   for (let i = 0; i < sessions.length; i++) {
     if (sessions[i].token === token) {
       userId = sessions[i].userId;
+
+      for (let j = 0; j < accounts.length; j++) {
+        if (userId === accounts[j].userId) {
+          amount = accounts[j].amount;
+        }
+      }
     }
   }
-  res.send(JSON.stringify(userId));
+  res.send(JSON.stringify({ userId, amount }));
 });
 
 //Manage Account
