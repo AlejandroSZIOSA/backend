@@ -30,6 +30,7 @@ app.get("/saldo", (req, res) => {
   res.send("Current Saldo" + JSON.stringify(saldo)); //Response to the client
 });
 
+/* TODO: User With id */
 //Create users
 app.post("/users", (req, res) => {
   const data = req.body; //data from the client
@@ -39,6 +40,7 @@ app.post("/users", (req, res) => {
   res.send("User created" + JSON.stringify(data));
 });
 
+//TODO: use the real token
 //Login + return one password for login
 app.post("/sessions", (req, res) => {
   const data = req.body; //data from the client
@@ -79,6 +81,7 @@ app.post("/me/accounts", (req, res) => {
   res.send(JSON.stringify({ userId, amount }));
 });
 
+//TODO:SÄTT IN PENGAR
 //Manage Account
 app.post("/me/accounts/transactions", (req, res) => {
   const data = req.body; //data from the client
