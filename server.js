@@ -14,14 +14,19 @@ app.use(bodyParser.json());
 function generateOTP() {
   // Generera en sexsiffrig numerisk OTP
   const otp = Math.floor(100000 + Math.random() * 900000);
-  /* return otp.toString(); */
-  return "777";
+  return otp.toString();
 }
 
 // Din kod här. Skriv dina arrayer
-const users = [{ id: 101, username: "gato", password: "123" }];
-const accounts = [{ id: 1, userId: 101, amount: 3 }];
-const sessions = [{ userId: 101, token: "777" }];
+const users = [
+  { id: 101, username: "gato", password: "123" },
+  /* { id: 102, username: "test", password: "test" }, */
+];
+const accounts = [
+  { id: 1, userId: 101, amount: 3 },
+  { id: 2, userId: 102, amount: 0 },
+];
+const sessions = [];
 
 /* const saldo = { userId: 1, saldo: "20" }; */
 
@@ -30,17 +35,17 @@ app.get("/saldo", (req, res) => {
   res.send("Current Saldo" + JSON.stringify(saldo)); //Response to the client
 });
 
-/* TODO: User With id */
+//User With id
 //Create users
 app.post("/users", (req, res) => {
   const data = req.body; //data from the client
 
   users.push(data);
-  console.log(users);
+  /* console.log(users); */
   res.send("User created" + JSON.stringify(data));
 });
 
-//TODO: use the real token
+//use the real token
 //Login + return one password for login
 app.post("/sessions", (req, res) => {
   const data = req.body; //data from the client
@@ -50,9 +55,9 @@ app.post("/sessions", (req, res) => {
   for (let i = 0; i < users.length; i++) {
     if (username == users[i].username && password == users[i].password) {
       const token = generateOTP();
-      sessions.push({ id: users[i].id, token: token });
-      /* console.log(sessions); */
-      return res.send(generateOTP()); //Return a token
+      sessions.push({ userId: users[i].id, token: token });
+      console.log("sessions = ", sessions);
+      return res.send(token); //Return a token
     }
   }
   res.send(false);
@@ -63,6 +68,7 @@ app.post("/me/accounts", (req, res) => {
   const data = req.body; //data from the client
 
   const { token } = data;
+  /* console.log(token); */
   let userId = "not found";
 
   let amount = "not found";
