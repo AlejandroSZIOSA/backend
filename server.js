@@ -5,7 +5,7 @@ import cors from "cors";
 const app = express();
 
 let USER_ID = 102;
-let ACCOUNT_ID = 3;
+let ACCOUNT_ID = 2;
 
 const PORT = 4000; //server port
 
@@ -21,15 +21,9 @@ function generateOTP() {
 }
 
 // Din kod här. Skriv dina arrayer
-const users = [
-  { id: 101, username: "gato", password: "123" },
-  /* { id: 102, username: "test", password: "test" }, */
-];
+const users = [{ id: 101, username: "gato", password: "123" }];
 
-const accounts = [
-  { id: 1, userId: 101, amount: 3 },
-  { id: 2, userId: 102, amount: 0 },
-];
+const accounts = [{ id: 1, userId: 101, amount: 3 }];
 const sessions = [{ userId: 101, token: "777" }];
 
 // Din kod här. Skriv dina routes:
