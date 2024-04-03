@@ -22,21 +22,19 @@ const users = [
   { id: 101, username: "gato", password: "123" },
   /* { id: 102, username: "test", password: "test" }, */
 ];
+
 const accounts = [
   { id: 1, userId: 101, amount: 3 },
   { id: 2, userId: 102, amount: 0 },
 ];
-const sessions = [];
-
-/* const saldo = { userId: 1, saldo: "20" }; */
+const sessions = [{ userId: 101, token: "777" }];
 
 // Din kod här. Skriv dina routes:
 app.get("/saldo", (req, res) => {
   res.send("Current Saldo" + JSON.stringify(saldo)); //Response to the client
 });
 
-//User With id
-//Create users
+//CREATE USER
 app.post("/users", (req, res) => {
   const data = req.body; //data from the client
 
@@ -45,8 +43,7 @@ app.post("/users", (req, res) => {
   res.send("User created" + JSON.stringify(data));
 });
 
-//use the real token
-//Login + return one password for login
+//LOGIN USER + return one password for login
 app.post("/sessions", (req, res) => {
   const data = req.body; //data from the client
 
@@ -56,14 +53,14 @@ app.post("/sessions", (req, res) => {
     if (username == users[i].username && password == users[i].password) {
       const token = generateOTP();
       sessions.push({ userId: users[i].id, token: token });
-      console.log("sessions = ", sessions);
+      /* console.log("sessions = ", sessions); */
       return res.send(token); //Return a token
     }
   }
   res.send(false);
 });
 
-//Show saldo
+//SHOW USER ACCOUNT AMOUNT
 app.post("/me/accounts", (req, res) => {
   const data = req.body; //data from the client
 
@@ -76,7 +73,6 @@ app.post("/me/accounts", (req, res) => {
   for (let i = 0; i < sessions.length; i++) {
     if (sessions[i].token === token) {
       userId = sessions[i].userId;
-
       for (let j = 0; j < accounts.length; j++) {
         if (userId === accounts[j].userId) {
           amount = accounts[j].amount;
@@ -87,20 +83,24 @@ app.post("/me/accounts", (req, res) => {
   res.send(JSON.stringify({ userId, amount }));
 });
 
-//TODO:SÄTT IN PENGAR
-//Manage Account
+//MANAGE USER ACCOUNT
 app.post("/me/accounts/transactions", (req, res) => {
   const data = req.body; //data from the client
-  const { userId } = data;
+  const { token, newAmount } = data;
 
   /* console.log(userId); */
-  let saldo = "not found";
-  for (let i = 0; i < accounts.length; i++) {
-    if (accounts[i].userId === userId) {
-      saldo = accounts[i].amount;
+
+  for (let i = 0; i < sessions.length; i++) {
+    if (sessions[i].token === token) {
+      for (let j = 0; j < accounts.length; j++) {
+        if (sessions[i].userId === accounts[j].userId) {
+          accounts[j].amount = newAmount;
+        }
+      }
     }
   }
-  res.send(JSON.stringify(saldo)); // Send the current saldo
+  console.log("Accounts = ", accounts);
+  res.send(JSON.stringify("Transaction Done"));
 });
 
 // Starta servern
