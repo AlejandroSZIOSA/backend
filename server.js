@@ -4,6 +4,9 @@ import cors from "cors";
 
 const app = express();
 
+let USER_ID = 102;
+let ACCOUNT_ID = 3;
+
 const PORT = 4000; //server port
 
 // Middleware
@@ -37,8 +40,14 @@ app.get("/saldo", (req, res) => {
 //CREATE USER
 app.post("/users", (req, res) => {
   const data = req.body; //data from the client
+  const { username, password } = data;
 
-  users.push(data);
+  const newUser = { id: USER_ID++, username, password };
+  const newUserAccount = { id: ACCOUNT_ID++, userId: newUser.id, amount: 0 };
+
+  users.push(newUser);
+  accounts.push(newUserAccount);
+
   /* console.log(users); */
   res.send("User created" + JSON.stringify(data));
 });
@@ -53,6 +62,7 @@ app.post("/sessions", (req, res) => {
     if (username == users[i].username && password == users[i].password) {
       const token = generateOTP();
       sessions.push({ userId: users[i].id, token: token });
+
       /* console.log("sessions = ", sessions); */
       return res.send(token); //Return a token
     }
