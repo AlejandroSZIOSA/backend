@@ -27,9 +27,6 @@ const accounts = [{ id: 1, userId: 101, amount: 3 }];
 const sessions = [{ userId: 101, token: "777" }];
 
 // Din kod här. Skriv dina routes:
-app.get("/saldo", (req, res) => {
-  res.send("Current Saldo" + JSON.stringify(saldo)); //Response to the client
-});
 
 //CREATE USER
 app.post("/users", (req, res) => {
@@ -43,7 +40,7 @@ app.post("/users", (req, res) => {
   accounts.push(newUserAccount);
 
   /* console.log(users); */
-  res.send("User created" + JSON.stringify(data));
+  res.send("User created");
 });
 
 //LOGIN USER + return one password for login
@@ -104,7 +101,7 @@ app.post("/me/accounts/transactions", (req, res) => {
     }
   }
   console.log("Accounts = ", accounts);
-  res.send(JSON.stringify("Transaction Done"));
+  res.send("Transaction Done");
 });
 
 // Starta servern
