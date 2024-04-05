@@ -29,7 +29,7 @@ const pool = mysql.createPool({
 //DB* 3- HELP FUNCTION TO MAKE CODE LOOK NICER / async + await
 async function query(sql, params) {
   //get results
-  const [results, fields] = await pool.execute(sql, params);
+  const [results] = await pool.execute(sql, params);
   return results;
 }
 
@@ -48,7 +48,7 @@ const sessions = [{ userId: 101, token: "777" }];
 
 // Din kod här. Skriv dina routes:
 
-//DB* 1- CREATE USER API WITH DB
+//DB* 1- CREATE USER API WITH DB / async + await
 app.post("/users", async (req, res) => {
   //DB* 4 ACCESS TO DB
   //4.1
@@ -57,6 +57,7 @@ app.post("/users", async (req, res) => {
   try {
     //4.2 - Anti-hacker Security DB /await async
     const result = await query(
+      //In SQL DB
       "INSERT INTO users(username,password) VALUES (?,?)",
       [username, password]
     );
