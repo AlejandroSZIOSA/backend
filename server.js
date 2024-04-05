@@ -57,7 +57,6 @@ app.post("/users", async (req, res) => {
   const { username, password } = req.body;
 
   //DB*5 KRYPTERING PASSWORD
-
   const saltRounds = 10;
   const hashedPassword = await bcrypt.hash(password, saltRounds);
   console.log(hashedPassword);
