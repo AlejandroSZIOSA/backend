@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
+import mysql from "mysql2/promise";
 
 const app = express();
 
@@ -11,7 +12,26 @@ const PORT = 4000; //server port
 
 // Middleware
 app.use(cors());
+
 app.use(bodyParser.json());
+
+//DB* 2- CONNECTION TO THE SQL DB
+//use login INFO from the DB page
+
+const pool = mysql.createPool({
+  host: "localhost", //info from the DB page
+  user: "root", //info from the DB page
+  password: "root", //info from the DB page
+  database: "bank2", //info from the DB page
+  port: 8889, //info from the DB page
+});
+
+//DB* 3- HELP FUNCTION TO MAKE CODE LOOK NICER / async + await
+async function query(sql, params) {
+  //get results
+  const [results, fields] = await pool.execute(sql, params);
+  return results;
+}
 
 // Generera engångslösenord
 function generateOTP() {
@@ -28,8 +48,30 @@ const sessions = [{ userId: 101, token: "777" }];
 
 // Din kod här. Skriv dina routes:
 
+//DB* 1- CREATE USER API WITH DB
+app.post("/users", async (req, res) => {
+  //DB* 4 ACCESS TO DB
+  //4.1
+  const { username, password } = req.body;
+  //4.3 try catch
+  try {
+    //4.2 - Anti-hacker Security DB /await async
+    const result = await query(
+      "INSERT INTO users(username,password) VALUES (?,?)",
+      [username, password]
+    );
+    //4.4 Code 201 is something good to React
+    res.status(201).send("User created");
+  } catch (e) {
+    console.error("Error creating user");
+    //4.5 Code 500 is something bad
+    res.status(500).send("Error creating user");
+  }
+});
+
 //CREATE USER
-app.post("/users", (req, res) => {
+
+/* app.post("/users", (req, res) => {
   const data = req.body; //data from the client
   const { username, password } = data;
 
@@ -39,9 +81,8 @@ app.post("/users", (req, res) => {
   users.push(newUser);
   accounts.push(newUserAccount);
 
-  /* console.log(users); */
   res.send("User created");
-});
+}); */
 
 //LOGIN USER + return one password for login
 app.post("/sessions", (req, res) => {
