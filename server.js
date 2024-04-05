@@ -94,8 +94,32 @@ app.post("/users", async (req, res) => {
   res.send("User created");
 }); */
 
+//DB* 6 - LOGIN WITH DB
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+
+  //6.1 search user that matches username
+  const result = await query("SELECT * FROM users WHERE username=?", [
+    username,
+  ]);
+  console.log("result", result);
+  const user = result[0];
+
+  //6.2 compare password with hashed password / bcrypt
+
+  const passwordMatch = await bcrypt.compare(password, user.password);
+
+  if (!passwordMatch) {
+    //code for wrong password :)
+    return res.status(401).send("Invalid password");
+  }
+  //no status code will be by default 200 Good
+  res.send("login success");
+});
+
 //LOGIN USER + return one password for login
-app.post("/sessions", (req, res) => {
+
+/* app.post("/sessions", (req, res) => {
   const data = req.body; //data from the client
 
   const { username, password } = data;
@@ -105,12 +129,11 @@ app.post("/sessions", (req, res) => {
       const token = generateOTP();
       sessions.push({ userId: users[i].id, token: token });
 
-      /* console.log("sessions = ", sessions); */
       return res.send(token); //Return a token
     }
   }
   res.send(false);
-});
+}); */
 
 //SHOW USER ACCOUNT AMOUNT
 app.post("/me/accounts", (req, res) => {
