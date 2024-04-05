@@ -1,7 +1,9 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
+//DB
 import mysql from "mysql2/promise";
+import bcrypt from "bcrypt";
 
 const app = express();
 
@@ -53,13 +55,20 @@ app.post("/users", async (req, res) => {
   //DB* 4 ACCESS TO DB
   //4.1
   const { username, password } = req.body;
+
+  //DB*5 KRYPTERING PASSWORD
+
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
+  console.log(hashedPassword);
+
   //4.3 try catch
   try {
     //4.2 - Anti-hacker Security DB /await async
     const result = await query(
       //In SQL DB
       "INSERT INTO users(username,password) VALUES (?,?)",
-      [username, password]
+      [username, hashedPassword] //Change password to hashedPassword
     );
     //4.4 Code 201 is something good to React
     res.status(201).send("User created");
