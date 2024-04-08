@@ -7,9 +7,6 @@ import bcrypt from "bcrypt";
 
 const app = express();
 
-let USER_ID = 102;
-let ACCOUNT_ID = 2;
-
 const PORT = 4000; //server port
 
 // Middleware
@@ -43,10 +40,7 @@ function generateOTP() {
 }
 
 // Din kod här. Skriv dina arrayer
-const users = [{ id: 101, username: "gato", password: "123" }];
-
-const accounts = [{ id: 1, userId: 101, amount: 3 }];
-const sessions = [{ userId: 101, token: "777" }];
+const sessions = []; //CONTAIN THE RANDOM TOKEN FOR THE CURRENT SESSION(LOGIN)
 
 // Din kod här. Skriv dina routes:
 
@@ -60,7 +54,6 @@ app.post("/users", async (req, res) => {
   //DB*5 KRYPTERING PASSWORD
   const saltRounds = 10;
   const hashedPassword = await bcrypt.hash(password, saltRounds);
-  /* console.log(hashedPassword); */
 
   //4.3 try catch
   try {
@@ -71,28 +64,17 @@ app.post("/users", async (req, res) => {
       [username, hashedPassword] //Change password to hashedPassword
     );
     createdUserId = result.insertId;
-    //console.log(createdUserId);
 
-    //4.4 Code 201 is something good to React
-
-    return res.status(201).send("User created");
-  } catch (e) {
-    console.error("Error creating user");
-    //4.5 Code 500 is something bad
-    res.status(500).send("Error creating user");
-  }
-
-  //4.5 Create new user account + amount: 0
-  try {
+    //CREATE A NEW ACCOUNT
     const dbResults = await query(
       "INSERT INTO accounts(userId, amount)VALUES (?, ?)",
       [createdUserId, 0]
     );
-    res.send("New Account created");
+
+    //4.4 Code 201 is something good to React
+    return res.send("New User and Account created");
   } catch (e) {
-    //PROBLEM
-    console.error("Error creating New account");
-    /* res.status(500).send("Error Creating New Account"); */
+    res.status(500).send("Error creating user and Account");
   }
 });
 
@@ -116,7 +98,7 @@ app.post("/login", async (req, res) => {
   const token = generateOTP();
   sessions.push({ userId: user.id, token: token });
   res.send(token);
-  console.log(sessions);
+  /* console.log(sessions); */
 });
 
 //DB* 8 SHOW USER ACCOUNT AMOUNT WITH DB
@@ -125,48 +107,27 @@ app.post("/me/accounts", async (req, res) => {
   const data = req.body; //data from the client
   const { token } = data;
 
-  let userId;
-  let amount;
+  let userId = false;
+  let amount = false;
 
   for (let i = 0; i < sessions.length; i++) {
     if (sessions[i].token === token) {
       userId = sessions[i].userId;
-
       try {
         const dbResults = await query(
           "SELECT * FROM accounts WHERE userId =? ",
           [userId]
         );
-        amount = dbResults.amount;
+        const account = dbResults[0];
+        amount = account.amount; //fix problem
       } catch (error) {
         return res.status(500).send(error.message);
       }
     }
   }
-  if (!userId && !amount) return res.status(500).send("Error");
+  if (!userId || !amount) return res.status(500).send("Error");
   res.send(JSON.stringify({ userId, amount }));
 });
-
-//SHOW USER ACCOUNT AMOUNT
-/* app.post("/me/accounts", (req, res) => {
-  const data = req.body; //data from the client
-  const { token } = data;
-
-  let userId = "not found";
-  let amount = "not found";
-
-  for (let i = 0; i < sessions.length; i++) {
-    if (sessions[i].token === token) {
-      userId = sessions[i].userId;
-      for (let j = 0; j < accounts.length; j++) {
-        if (userId === accounts[j].userId) {
-          amount = accounts[j].amount;
-        }
-      }
-    }
-  }
-  res.send(JSON.stringify({ userId, amount }));
-}); */
 
 //DB *7 MANAGE USER ACCOUNT WITH DB
 app.post("/me/accounts/transactions", async (req, res) => {
@@ -176,43 +137,21 @@ app.post("/me/accounts/transactions", async (req, res) => {
   const result = await query("SELECT * FROM accounts WHERE userId=?", [userId]);
   const account = result[0];
 
-  /*   console.log(newAmount); */
-  /* console.log(account); */
-  //7.2
-  if (account.userId != userId) {
-    return res.status(401).send("invalid user id");
-  }
   //Try catch can uses in all queries
-
   try {
+    //7.2
+    if (account.userId != userId) {
+      res.status(500).send("invalid User id");
+    }
     const updateAmount = await query(
       "UPDATE accounts SET amount = ? WHERE userId = ?",
       [newAmount, account.userId]
     );
     res.send("Amount updated");
   } catch (e) {
-    //PROBLEM
-    console.log(e);
-    return res.status(500).send(e.message);
+    res.status(500).send(e.message);
   }
 });
-
-//MANAGE USER ACCOUNT
-/* app.post("/me/accounts/transactions", (req, res) => {
-  const data = req.body; //data from the client
-  const { token, newAmount } = data;
-
-  for (let i = 0; i < sessions.length; i++) {
-    if (sessions[i].token === token) {
-      for (let j = 0; j < accounts.length; j++) {
-        if (sessions[i].userId === accounts[j].userId) {
-          accounts[j].amount = newAmount;
-        }
-      }
-    }
-  }
-  res.send("Transaction Done");
-}); */
 
 // Starta servern
 app.listen(PORT, () => {
