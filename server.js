@@ -83,7 +83,6 @@ app.post("/users", async (req, res) => {
   }
 
   //4.5 Create new user account + amount: 0
-
   try {
     const dbResults = await query(
       "INSERT INTO accounts(userId, amount)VALUES (?, ?)",
@@ -120,47 +119,55 @@ app.post("/login", async (req, res) => {
   const result = await query("SELECT * FROM users WHERE username=?", [
     username,
   ]);
-  console.log("result", result);
   const user = result[0];
 
   //6.2 compare password with hashed password / bcrypt
-
   const passwordMatch = await bcrypt.compare(password, user.password);
 
   if (!passwordMatch) {
-    //code for wrong password :)
-    return res.status(401).send("Invalid password");
+    return res.send(false);
   }
-  //no status code will be by default 200 Good
-  res.send("login success");
+
+  const token = generateOTP();
+  sessions.push({ userId: user.id, token: token });
+  res.send(token);
+  console.log(sessions);
 });
 
-//LOGIN USER + return one password for login
+//DB* 8 SHOW USER ACCOUNT AMOUNT WITH DB
 
-/* app.post("/sessions", (req, res) => {
+app.post("/me/accounts", async (req, res) => {
   const data = req.body; //data from the client
+  const { token } = data;
 
-  const { username, password } = data;
+  let userId;
+  let amount;
 
-  for (let i = 0; i < users.length; i++) {
-    if (username == users[i].username && password == users[i].password) {
-      const token = generateOTP();
-      sessions.push({ userId: users[i].id, token: token });
+  for (let i = 0; i < sessions.length; i++) {
+    if (sessions[i].token === token) {
+      userId = sessions[i].userId;
 
-      return res.send(token); //Return a token
+      try {
+        const dbResults = await query(
+          "SELECT * FROM accounts WHERE userId =? ",
+          [userId]
+        );
+        amount = dbResults.amount;
+      } catch (error) {
+        return res.status(500).send(error.message);
+      }
     }
   }
-  res.send(false);
-}); */
+  if (!userId && !amount) return res.status(500).send("Error");
+  res.send(JSON.stringify({ userId, amount }));
+});
 
 //SHOW USER ACCOUNT AMOUNT
-app.post("/me/accounts", (req, res) => {
+/* app.post("/me/accounts", (req, res) => {
   const data = req.body; //data from the client
-
   const { token } = data;
-  /* console.log(token); */
-  let userId = "not found";
 
+  let userId = "not found";
   let amount = "not found";
 
   for (let i = 0; i < sessions.length; i++) {
@@ -174,7 +181,7 @@ app.post("/me/accounts", (req, res) => {
     }
   }
   res.send(JSON.stringify({ userId, amount }));
-});
+}); */
 
 //DB *7 MANAGE USER ACCOUNT WITH DB
 app.post("/me/accounts/transactions", async (req, res) => {
