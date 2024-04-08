@@ -75,7 +75,7 @@ app.post("/users", async (req, res) => {
 
     //4.4 Code 201 is something good to React
 
-    res.status(201).send("User created");
+    return res.status(201).send("User created");
   } catch (e) {
     console.error("Error creating user");
     //4.5 Code 500 is something bad
@@ -95,21 +95,6 @@ app.post("/users", async (req, res) => {
     /* res.status(500).send("Error Creating New Account"); */
   }
 });
-
-//CREATE USER
-
-/* app.post("/users", (req, res) => {
-  const data = req.body; //data from the client
-  const { username, password } = data;
-
-  const newUser = { id: USER_ID++, username, password };
-  const newUserAccount = { id: ACCOUNT_ID++, userId: newUser.id, amount: 0 };
-
-  users.push(newUser);
-  accounts.push(newUserAccount);
-
-  res.send("User created");
-}); */
 
 //DB* 6 - LOGIN WITH DB
 app.post("/login", async (req, res) => {
@@ -191,8 +176,8 @@ app.post("/me/accounts/transactions", async (req, res) => {
   const result = await query("SELECT * FROM accounts WHERE userId=?", [userId]);
   const account = result[0];
 
-  //console.log(newAmount);
-
+  /*   console.log(newAmount); */
+  /* console.log(account); */
   //7.2
   if (account.userId != userId) {
     return res.status(401).send("invalid user id");
@@ -202,14 +187,13 @@ app.post("/me/accounts/transactions", async (req, res) => {
   try {
     const updateAmount = await query(
       "UPDATE accounts SET amount = ? WHERE userId = ?",
-      [newAmount],
-      [account.userId]
+      [newAmount, account.userId]
     );
-    res.status(204).send("Amount updated");
+    res.send("Amount updated");
   } catch (e) {
     //PROBLEM
     console.log(e);
-    res.status(500).send("Error updating amount");
+    return res.status(500).send(e.message);
   }
 });
 
