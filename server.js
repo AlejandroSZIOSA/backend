@@ -4,15 +4,18 @@ import cors from "cors";
 //DB
 import mysql from "mysql2/promise";
 import bcrypt from "bcrypt";
+import dotenv from "dotenv";
 
 const app = express();
-
 const PORT = 4000; //server port
 
 // Middleware
 app.use(cors());
-
 app.use(bodyParser.json());
+
+//ENVIRONMENT VARIABLE
+dotenv.config();
+const dbPassword = process.env.DB_PASSWORD;
 
 //DB* 2- CONNECTION TO THE SQL DB
 //use login INFO from the DB page
@@ -20,7 +23,7 @@ app.use(bodyParser.json());
 const pool = mysql.createPool({
   host: "localhost", //info from the DB page
   user: "root", //info from the DB page
-  password: "root", //info from the DB page
+  password: dbPassword, //info from the DB page
   database: "bank2", //info from the DB page
   port: 8889, //info from the DB page
 });
