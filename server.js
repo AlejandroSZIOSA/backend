@@ -85,22 +85,26 @@ app.post("/users", async (req, res) => {
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
-  //6.1 search user that matches username
-  const result = await query("SELECT * FROM users WHERE username=?", [
-    username,
-  ]);
-  const user = result[0];
+  try {
+    //6.1 search user that matches username
+    const result = await query("SELECT * FROM users WHERE username=?", [
+      username,
+    ]);
+    const user = result[0];
 
-  //6.2 compare password with hashed password / bcrypt
-  const passwordMatch = await bcrypt.compare(password, user.password);
+    //6.2 compare password with hashed password / bcrypt
+    const passwordMatch = await bcrypt.compare(password, user.password);
 
-  if (!passwordMatch) {
-    return res.send(false);
+    if (!passwordMatch) {
+      return res.send(false);
+    }
+    const token = generateOTP();
+    sessions.push({ userId: user.id, token: token });
+    res.send(token);
+  } catch (e) {
+    res.send(e.message);
   }
 
-  const token = generateOTP();
-  sessions.push({ userId: user.id, token: token });
-  res.send(token);
   /* console.log(sessions); */
 });
 
@@ -123,8 +127,8 @@ app.post("/me/accounts", async (req, res) => {
         );
         const account = dbResults[0];
         amount = account.amount; //fix problem
-      } catch (error) {
-        return res.status(500).send(error.message);
+      } catch (e) {
+        res.status(500).send(e.message);
       }
     }
   }
@@ -136,16 +140,15 @@ app.post("/me/accounts", async (req, res) => {
 app.post("/me/accounts/transactions", async (req, res) => {
   const { userId, newAmount } = req.body;
 
-  //7.1 Search the row in DB
-  const result = await query("SELECT * FROM accounts WHERE userId=?", [userId]);
-  const account = result[0];
-
   //Try catch can uses in all queries
   try {
+    //7.1 Search the row in DB
+    const result = await query("SELECT * FROM accounts WHERE userId=?", [
+      userId,
+    ]);
+    //Automatic error if userId does not Match
+    const account = result[0];
     //7.2
-    if (account.userId != userId) {
-      res.status(500).send("invalid User id");
-    }
     await query("UPDATE accounts SET amount = ? WHERE userId = ?", [
       newAmount,
       account.userId,
