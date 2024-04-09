@@ -146,10 +146,10 @@ app.post("/me/accounts/transactions", async (req, res) => {
     if (account.userId != userId) {
       res.status(500).send("invalid User id");
     }
-    const updateAmount = await query(
-      "UPDATE accounts SET amount = ? WHERE userId = ?",
-      [newAmount, account.userId]
-    );
+    await query("UPDATE accounts SET amount = ? WHERE userId = ?", [
+      newAmount,
+      account.userId,
+    ]);
     res.send("Amount updated");
   } catch (e) {
     res.status(500).send(e.message);
