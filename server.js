@@ -49,17 +49,16 @@ const sessions = []; //CONTAIN THE RANDOM TOKEN FOR THE CURRENT SESSION(LOGIN)
 
 //DB* 1- CREATE USER API WITH DB / async + await
 app.post("/users", async (req, res) => {
-  //DB* 4 ACCESS TO DB
-  //4.1
-  const { username, password } = req.body;
-  let createdUserId;
-
-  //DB*5 KRYPTERING PASSWORD
-  const saltRounds = 10;
-  const hashedPassword = await bcrypt.hash(password, saltRounds);
-
   //4.3 try catch
   try {
+    //DB* 4 ACCESS TO DB
+    //4.1
+    const { username, password } = req.body;
+    let createdUserId;
+    //DB*5 KRYPTERING PASSWORD
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
     //4.2 - Anti-hacker Security DB /await async
     const result = await query(
       //In SQL DB
@@ -83,9 +82,8 @@ app.post("/users", async (req, res) => {
 
 //DB* 6 - LOGIN WITH DB
 app.post("/login", async (req, res) => {
-  const { username, password } = req.body;
-
   try {
+    const { username, password } = req.body;
     //6.1 search user that matches username
     const result = await query("SELECT * FROM users WHERE username=?", [
       username,
@@ -138,10 +136,9 @@ app.post("/me/accounts", async (req, res) => {
 
 //DB *7 MANAGE USER ACCOUNT WITH DB
 app.post("/me/accounts/transactions", async (req, res) => {
-  const { userId, newAmount } = req.body;
-
   //Try catch can uses in all queries
   try {
+    const { userId, newAmount } = req.body;
     //7.1 Search the row in DB
     const result = await query("SELECT * FROM accounts WHERE userId=?", [
       userId,
