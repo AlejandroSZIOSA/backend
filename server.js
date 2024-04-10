@@ -115,6 +115,8 @@ app.post("/me/accounts", async (req, res) => {
   const data = req.body; //data from the client
   const { token } = data;
 
+  //TODO: check
+
   let userId = false;
   let amount = false;
 
