@@ -6,8 +6,6 @@ import mysql from "mysql2/promise";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 
-//test Git
-
 const app = express();
 const PORT = 4000; //server port
 
@@ -114,8 +112,6 @@ app.post("/login", async (req, res) => {
 app.post("/me/accounts", async (req, res) => {
   const data = req.body; //data from the client
   const { token } = data;
-
-  //TODO: check
 
   let userId = false;
   let amount = false;
