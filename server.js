@@ -98,6 +98,7 @@ app.post("/login", async (req, res) => {
     }
     const token = generateOTP();
     sessions.push({ userId: user.id, token: token });
+    console.log(sessions);
     res.send(token);
   } catch (e) {
     res.send(e.message);
@@ -111,6 +112,8 @@ app.post("/login", async (req, res) => {
 app.post("/me/accounts", async (req, res) => {
   const data = req.body; //data from the client
   const { token } = data;
+
+  //TODO: check
 
   let userId = false;
   let amount = false;
@@ -130,7 +133,7 @@ app.post("/me/accounts", async (req, res) => {
       }
     }
   }
-  if (!userId || !amount) return res.status(500).send("Error");
+  /* if (!userId || !amount) return res.status(500).send("Error"); */
   res.send(JSON.stringify({ userId, amount }));
 });
 
