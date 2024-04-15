@@ -25,7 +25,7 @@ const pool = mysql.createPool({
   user: "root", //info from the DB page
   password: dbPassword, //info from the DB page
   database: "bank2", //info from the DB page
-  port: 8889, //info from the DB page
+  port: 8888, //info from the DB page
 });
 
 //DB* 3- HELP FUNCTION TO MAKE CODE LOOK NICER / async + await
