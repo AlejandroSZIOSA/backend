@@ -21,11 +21,11 @@ const dbPassword = process.env.DB_PASSWORD;
 //use login INFO from the DB page
 
 const pool = mysql.createPool({
-  host: "localhost", //info from the DB page
+  host: "mysql", //info from the DB page
   user: "root", //info from the DB page
   password: dbPassword, //info from the DB page
   database: "bank2", //info from the DB page
-  port: 8888, //info from the DB page
+  //port: 3306, //info from the DB page
 });
 
 //DB* 3- HELP FUNCTION TO MAKE CODE LOOK NICER / async + await
@@ -76,6 +76,7 @@ app.post("/users", async (req, res) => {
     //4.4 Code 201 is something good to React
     return res.send("New User and Account created");
   } catch (e) {
+    console.log(e.message);
     res.status(500).send("Error creating user and Account");
   }
 });
@@ -101,6 +102,7 @@ app.post("/login", async (req, res) => {
     console.log(sessions);
     res.send(token);
   } catch (e) {
+    console.error(e.message);
     res.send(e.message);
   }
 
