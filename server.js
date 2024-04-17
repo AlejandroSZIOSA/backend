@@ -21,11 +21,11 @@ const dbPassword = process.env.DB_PASSWORD;
 //use login INFO from the DB page
 
 const pool = mysql.createPool({
-  host: "mysql", //info from the DB page, Fix Docker problem
+  host: "mysql", //info from the DB page, Fix Docker problem!
   user: "root", //info from the DB page
   password: dbPassword, //info from the DB page
   database: "bank2", //info from the DB page
-  //port: 3306, //info from the DB page, Fix docker problem
+  //port: 3306, //info from the DB page, Fix docker problem!
 });
 
 //DB* 3- HELP FUNCTION TO MAKE CODE LOOK NICER / async + await
