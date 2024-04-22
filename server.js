@@ -25,7 +25,7 @@ const pool = mysql.createPool({
   user: "root", //info from the DB page
   password: dbPassword, //info from the DB page
   database: "bank2", //info from the DB page
-  port: 8889, //info from the DB page
+  port: 8891, //info from the DB page - NOTE:Check the port number in MAMP before to connect to Frontend
 });
 
 //DB* 3- HELP FUNCTION TO MAKE CODE LOOK NICER / async + await
@@ -74,7 +74,8 @@ app.post("/users", async (req, res) => {
     );
 
     //4.4 Code 201 is something good to React
-    return res.send("New User and Account created");
+    console.log("user Created");
+    res.send("New User and Account created");
   } catch (e) {
     res.status(500).send("Error creating user and Account");
   }
@@ -98,7 +99,7 @@ app.post("/login", async (req, res) => {
     }
     const token = generateOTP();
     sessions.push({ userId: user.id, token: token });
-    console.log(sessions);
+    console.log("User login");
     res.send(token);
   } catch (e) {
     res.send(e.message);
