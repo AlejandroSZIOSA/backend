@@ -99,7 +99,7 @@ app.post("/login", async (req, res) => {
     }
     const token = generateOTP();
     sessions.push({ userId: user.id, token: token });
-    console.log(sessions);
+    console.log("login user");
     res.send(token);
   } catch (e) {
     console.error(e.message);
